@@ -138,7 +138,7 @@ public abstract class Person {
 
 * Specific wildcards to format the output code 
 
-* Test generated files with *TODO*
+* Test generated files with Google's _[Compile Testing](https://github.com/google/compile-testing)_ and _[Truth](https://google.github.io/truth/)_
 
 ---
 
