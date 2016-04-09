@@ -60,7 +60,13 @@ dependencies {
     * Same package binding class generation
     * A single entry point: the `ButterKnife` class, that resolves the concrete binder
 
-*TODO: insert code*
+---
+
+![FragmentRepoDetail_Butterknife.java](assets/FragmentRepoDetail_Butterknife.png)
+
+---
+
+![FragmentRepoDetail&#36;&#36;ViewBinder.java](assets/FragmentRepoDetail__ViewBinder.png)
 
 # Navigation
 
@@ -72,7 +78,21 @@ dependencies {
 * Class generation following the [Builder pattern](http://www.oodesign.com/builder-pattern.html)
 * Method to inject parameter(s) in the target class
 
-*TODO: insert code*
+---
+
+![ActivityRepoDetail.java](assets/ActivityRepoDetail.png)
+
+---
+
+![ActivityRepoDetailIntentBuilder.java](assets/ActivityRepoDetailIntentBuilder.png)
+
+---
+
+![FragmentRepoDetail_FragmentArgs.java](assets/FragmentRepoDetail_FragmentArgs.png)
+
+---
+
+![FragmentRepoDetailBuilder.java](assets/FragmentRepoDetailBuilder.png)
 
 # Interactions
 
@@ -99,7 +119,11 @@ public abstract class Person {
 
 ---
 
-*TODO: insert generated code*
+![&#36;AutoValue_Person.java](assets/_AutoValue_Person.png)
+
+---
+
+![AutoValue_Person.java](assets/AutoValue_Person.png)
 
 # Others
 
