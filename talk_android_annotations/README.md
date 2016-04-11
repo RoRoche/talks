@@ -14,12 +14,12 @@ output:
 
 ## Introduction
 
-* Huge gain of productivity
+* Gain of productivity
     * Don't (re)write boilerplate code
-    * Code generation
+    * Automatic code generation
 * Code quality improvements
     * Widely tested and documented third-party libraries
-    * Less code to write, less bugs to solve
+    * Less code to write, less bugs to fix
 * What about performances?
     * Annotations processing compile time vs. runtime
 
@@ -44,7 +44,6 @@ dependencies {
 ## [Butter Knife](http://jakewharton.github.io/butterknife/)
 
 * No `findViewById` anymore, elegant binding mechanism
-* Still want to use the `findViewById`? Just try the autocast alternative
 * Simple way to bind resources
 * Bind anything: activities, fragments, views, view holders
 * The power of view lists (actions, setters)
@@ -54,15 +53,13 @@ dependencies {
 * Event bindings:
     * OnClick/OnLongClick, OnItemSelected, OnCheckedChanged, OnEditorAction, OnFocusChange, OnItemLongClick, OnPageChange, OnTextChanged, OnTouch
 
----
-
 * Under the hood
     * Same package binding class generation
     * A single entry point: the `ButterKnife` class, that resolves the concrete binder
 
 ---
 
-![FragmentRepoDetail_Butterknife.java](assets/FragmentRepoDetail_Butterknife.png)
+![FragmentRepoDetail.java (Butter Knife)](assets/FragmentRepoDetail_Butterknife.png)
 
 ---
 
@@ -72,11 +69,13 @@ dependencies {
 
 ## [IntentBuilder](https://github.com/emilsjolander/IntentBuilder) and [FragmentArgs](https://github.com/sockeqwe/fragmentargs)
 
-* Boilerplate code to declare a new screen
-* Annotations to declare an Activity/Fragment
-* Annotations to declare (optional) parameter(s) to pass
-* Class generation following the [Builder pattern](http://www.oodesign.com/builder-pattern.html)
-* Method to inject parameter(s) in the target class
+* Problem:
+    * Boilerplate and unsafe code to declare a new screen
+* Solution:
+    * Annotations to declare an Activity/Fragment
+    * Annotations to declare (optional) parameter(s) to pass
+    * Class generation following the [Builder pattern](http://www.oodesign.com/builder-pattern.html)
+    * Method to inject parameter(s) in the target class
 
 ---
 
@@ -88,7 +87,7 @@ dependencies {
 
 ---
 
-![FragmentRepoDetail_FragmentArgs.java](assets/FragmentRepoDetail_FragmentArgs.png)
+![FragmentRepoDetail.java (FragmentArgs)](assets/FragmentRepoDetail_FragmentArgs.png)
 
 ---
 
@@ -188,16 +187,6 @@ public static void main(String[] args) {
     System.out.println("Hello, JavaPoet!");
 }
 ```
-
----
-
-## [Google AutoService](https://github.com/google/auto/tree/master/service)
-
-* Simple `@AutoService` annotation for your `javax.annotation.processing.Processor` subclass
-
-* Automatic generation of the `META-INF/services/` `javax.annotation.processing.Processor` in the output classes folder
-
-* Automatic inclusion of the annotated processor
 
 ---
 
