@@ -1,4 +1,3 @@
-@FragmentWithArgs
 public class FragmentRepoDetail extends Fragment {
 
     @Bind(R.id.FragmentRepoDetail_TextView_Description)
@@ -17,7 +16,6 @@ public class FragmentRepoDetail extends Fragment {
     @Override
     public void onViewCreated(final View poView, final Bundle poSavedInstanceState) {
         super.onViewCreated(poView, poSavedInstanceState);
-
         ButterKnife.bind(this, poView);
     }
 

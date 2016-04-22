@@ -2,12 +2,12 @@
 title: "Android: annotations to the rescue"
 author:
 - Romain Rochegude
-fontsize: 14pt
+fontsize: 12pt
 date: 2016.03.30
 output: 
   beamer_presentation:
     theme: "metropolis"
-    highlight: pygments
+    highlight: tango
 ---
 
 # Introduction
@@ -32,12 +32,12 @@ output:
     * Runs annotation processing
     * Example:
 
-```groovy
+~~~groovy
 dependencies {
     compile 'a.group:annotation:x.x.x'
     apt 'a.group:processor:x.x.x'
 }
-```
+~~~
 
 # Views
 
@@ -79,7 +79,20 @@ dependencies {
 
 ---
 
-![ActivityRepoDetail.java](assets/ActivityRepoDetail.png)
+~~~java
+@IntentBuilder
+public class ActivityRepoDetail extends Activity {
+ @Extra
+ Long mItemId;
+    
+ @Override
+ protected void onCreate(final Bundle savedInstanceState) {
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.activity_repo_detail);
+  ActivityRepoDetailIntentBuilder.inject(getIntent(), this);
+ }
+}
+~~~
 
 ---
 
@@ -87,7 +100,21 @@ dependencies {
 
 ---
 
-![FragmentRepoDetail.java (FragmentArgs)](assets/FragmentRepoDetail_FragmentArgs.png)
+~~~java
+@FragmentWithArgs
+public class FragmentRepoDetail extends Fragment {
+  @Arg
+  Long mItemId;
+ 
+  public FragmentRepoDetail() {}
+ 
+  @Override
+  public void onCreate(final Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    FragmentArgs.inject(this);
+  }
+}
+~~~
 
 ---
 
@@ -102,19 +129,23 @@ dependencies {
 
 ---
 
-```java
+~~~java
 @AutoValue
 public abstract class Person {
- @ColumnName("name") abstract String name();
+  @ColumnName("name")
+  abstract String name();
+  @ColumnName("surname")
+  abstract String surname();
+  @ColumnName("age")
+  abstract int age();
+  
+  public static Person create(Cursor pCursor) {
+    return AutoValue_Person.createFromCursor(pCursor);
+  }
 
- public static Person create(Cursor cursor) {
-  return AutoValue_Person.
-          createFromCursor(cursor);
- }
-
- abstract ContentValues toContentValues();
+  abstract ContentValues toContentValues();
 }
-```
+~~~
 
 ---
 
@@ -165,28 +196,27 @@ public abstract class Person {
 
 ---
 
-```java
+~~~java
 MethodSpec main = MethodSpec
   .methodBuilder("main")
-  .addModifiers(Modifier.PUBLIC, 
-                    Modifier.STATIC)
+  .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
   .returns(void.class)
   .addParameter(String[].class, "args")
   .addStatement("$T.out.println($S)", 
                     System.class, 
                     "Hello, JavaPoet!")
   .build();
-```
+~~~
 
 ---
 
 to
 
-```java
+~~~java
 public static void main(String[] args) {
     System.out.println("Hello, JavaPoet!");
 }
-```
+~~~
 
 ---
 
