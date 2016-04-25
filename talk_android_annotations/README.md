@@ -12,7 +12,19 @@ output:
 
 # Introduction
 
-## Introduction
+## Java Annotations
+
+* Since Java 5, JSR 175
+* Metadata information into source code
+* Compile time and runtime processing
+* The `@` character
+* Markers, single value annotations, full annotations
+
+\begin{alertblock}{Examples}
+`@Override`, `@Deprecated`, etc.
+\end{alertblock}
+
+## Goals
 
 * Gain of productivity
     * Don't (re)write boilerplate code
@@ -21,9 +33,6 @@ output:
     * Widely tested and documented third-party libraries
     * Less code to write, less bugs to fix
 * What about performances?
-    * Annotations processing compile time vs. runtime
-
-# Android compliance
 
 ## Android compliance
 
@@ -46,16 +55,35 @@ dependencies {
 * No `findViewById` anymore, elegant binding mechanism
 * Simple way to bind resources
 * Bind anything: activities, fragments, views, view holders
-* The power of view lists (actions, setters)
+* Event binding (OnClick, OnCheckedChanged, OnTextChanged, etc.)
+
+\begin{alertblock}{Examples}
+\end{alertblock}
+
+~~~java
+class ExampleActivity extends Activity {
+  @BindView(R.id.title) TextView title;
+  @BindString(R.string.subtitle) String subtitle;
+  @BindColor(R.color.red) int red;
+  // ...
+}
+~~~
 
 ---
 
-* Event bindings:
-    * OnClick/OnLongClick, OnItemSelected, OnCheckedChanged, OnEditorAction, OnFocusChange, OnItemLongClick, OnPageChange, OnTextChanged, OnTouch
+* The power of view lists (actions, setters)
 
-* Under the hood
-    * Same package binding class generation
-    * A single entry point: the `ButterKnife` class, that resolves the concrete binder
+\begin{alertblock}{Examples}
+\end{alertblock}
+
+~~~java
+@BindViews({ R.id.first_name, R.id.middle_name, R.id.last_name })
+List<EditText> nameViews;
+
+// ...
+
+ButterKnife.apply(nameViews, View.VISIBILITY, View.GONE);
+~~~
 
 ---
 
@@ -175,15 +203,22 @@ public abstract class Person {
 
 ## Concepts
 
-* Provide a robust annotation API
+\begin{alertblock}{Provide a robust annotations API}
+- Define annotations using `@interface`
 
-* Implement the algorithm to search for your annotations and deal with it
+\end{alertblock}
+
+\begin{alertblock}{Implement the algorithm to parse annotations}
+- Define a class that extends `AbstractProcessor`
+
+- Define an entry containing this processor name in `META-INF/services/javax.annotation.processing.Processor`
+\end{alertblock}
 
 ---
 
 ## Generate Java source files: [JavaPoet](https://github.com/square/javapoet)
 
-* Powerful and complete API to describe 
+* Powerful and complete API to describe:
     * static imports,
     * classes, interfaces, enums, anonymous inner classes,
     * fields, parameters, variables,
