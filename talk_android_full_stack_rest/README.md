@@ -26,7 +26,7 @@ output:
 
 - Well-known, documented, "must-have" Android library
 - Write a Java interface to declare API method
-- Annotations to dscribe the HTTP request
+- Annotations to describe the HTTP request
 	- HTTP method (`@GET`, `@POST`, etc.)
 	- URL parameter (`@Path`)
 	- query parameter (`@Query`, `@QueryMap`)
@@ -145,7 +145,7 @@ final String lsJson = LoganSquare.serialize(loImage);
 
 - Inspired by a [Google I/O 2010 talk on REST client applications](http://www.youtube.com/watch?v=xHXn3Kg2IQE)
 
-- Easy to declare a new taks (extends `Job`) and configure it
+- Easy to declare a new tasks (extends `Job`) and configure it
 
 ```java
 public class PostTweetJob extends Job {
