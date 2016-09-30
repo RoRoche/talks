@@ -101,7 +101,7 @@ final long llItemId = loCursor.getLong(
 );
 ```
 
-- Recommandation to setup a ["contract" class](https://developer.android.com/training/basics/data-storage/databases.html#DefineContract)
+- Recommendation to setup a ["contract" class](https://developer.android.com/training/basics/data-storage/databases.html#DefineContract)
 
 ## [The ContentProvider way](https://developer.android.com/guide/topics/providers/content-provider-creating.html)
 
@@ -336,7 +336,69 @@ public RepoDatabaseHelper(Context context) {
 
 ## The attractive way: [requery](https://github.com/requery/requery/)
 
-## Async management: RxJava
+- Object mapping
+- SQL generator
+- RxJava and Java 8 support
+- No reflection, compile-time processing and generation
+- Custom type converters
+
+- Define object mapping
+
+```java
+@Entity
+abstract class AbstractPerson {
+
+    @Key @Generated
+    int id;
+
+    @Index("name_index")
+    String name;
+
+    @OneToMany // relationships 1:1, 1:many, many to many
+    Set<Phone> phoneNumbers;
+
+    @Converter(EmailToStringConverter.class) // custom type conversion
+    Email email;
+
+    @PostLoad
+    void afterLoad() {
+        //...
+    }
+}
+```
+
+- Easy to perform SQL queries
+
+```java
+Result<Person> query = data
+    .select(Person.class)
+    .where(Person.NAME.lower().like("b%")).and(Person.AGE.gt(20))
+    .orderBy(Person.AGE.desc())
+    .limit(5)
+    .get();
+```
+
+### Async management: RxJava
+
+- Get a specific instance of `SingleEntityStore`
+
+```java
+public SingleEntityStore<Persistable> provideDataStore(@NonNull final Context poContext) {
+    final DatabaseSource loSource = new DatabaseSource(poContext, Models.DEFAULT, "example.sqlite", 1);
+    final Configuration loConfiguration = loSource.getConfiguration();
+    final SingleEntityStore<Persistable> loDataStore = RxSupport.toReactiveStore(new EntityDataStore<>(loConfiguration));
+    return loDataStore;
+}
+```
+
+- and use it the RX way
+
+```java
+dataStore.select(RepoEntity.class)
+	.get()
+	.subscribeOn(Schedulers.newThread())
+	.subscribe(/*...*/)
+```
 
 # Conclusion
 
