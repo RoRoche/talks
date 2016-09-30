@@ -35,21 +35,30 @@ output:
 	- form management (`@FormUrlEncoded`, `@Field`)
 	- headers management (`@Headers`)
 
+---
+
 ```java
 public interface GitHubService {
+
     @GET("/users/{user}/repos")
     Call<List<DTORepo>> listRepos(@Path("user") final String psUser);
+
 }
 ```
+
+---
 
 - Build at runtime an implementation
 
 ```java
 final Retrofit loRetrofit = new Retrofit.Builder()
-                .baseUrl("https://api.github.com")
-                .build();
+    .baseUrl("https://api.github.com")
+    .build();
+
 final GitHubService loService = loRetrofit.create(GitHubService.class);
 ```
+
+---
 
 - Simple calls
 
@@ -59,11 +68,12 @@ final Call<List<DTORepo>> lloRepos = loService.listRepos("RoRoche");
 
 - Converters to (de)serialize HTTP bodies 
 
-```
+```java
 final Retrofit loRetrofit = new Retrofit.Builder()
-                //...
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+    //...
+    .addConverterFactory(
+        GsonConverterFactory.create())
+    .build();
 ```
 
 ## Conclusion
@@ -83,36 +93,29 @@ final Retrofit loRetrofit = new Retrofit.Builder()
 - Clear annotations
 
 ```java
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
-
 @JsonObject
 public class DTORepo {
     @JsonField(name = "id")
     public Integer id;
+    
     @JsonField(name = "name")
     public String name;
-    @JsonField(name = "description")
-    public String description;
-    @JsonField(name = "url")
-    public String url;
 }
 ```
+
+---
 
 - Available [retrofit converter](https://github.com/aurae/retrofit-logansquare)
 
 ```java
 final Retrofit loRetrofit = new Retrofit.Builder()
-                //...
-                .addConverterFactory(LoganSquareConverterFactory.create())
-                .build();
+    //...
+    .addConverterFactory(
+        LoganSquareConverterFactory.create())
+    .build();
 ```
 
-- Small library
-
-- [Supports custom types](https://github.com/bluelinelabs/LoganSquare/blob/development/docs/TypeConverters.md)
-
-- **Compile-time**
+---
 
 - Simple parsing methods
 
@@ -126,6 +129,8 @@ final String lsJson = ...;
 final Image loImage= LoganSquare.parse(lsJson, Image.class); 
 ```
 
+---
+
 - Simple serializing methods
 
 ```java
@@ -137,6 +142,14 @@ LoganSquare.serialize(loImage, loOs );
 final String lsJson = LoganSquare.serialize(loImage);
 ```
 
+---
+
+- Small library
+
+- [Supports custom types](https://github.com/bluelinelabs/LoganSquare/blob/development/docs/TypeConverters.md)
+
+- **Compile-time**
+
 # Async management: [Android Priority Job Queue (Job Manager)](https://github.com/yigit/android-priority-jobqueue)
 
 ## Async management: [Android Priority Job Queue (Job Manager)](https://github.com/yigit/android-priority-jobqueue)
@@ -147,57 +160,68 @@ final String lsJson = LoganSquare.serialize(loImage);
 
 - Easy to declare a new tasks (extends `Job`) and configure it
 
+---
+
 ```java
 public class PostTweetJob extends Job {
     public static final int PRIORITY = 1;
     
-    private String text;
+    private String mText;
     
     public PostTweetJob(String text) {
-        super(new Params(PRIORITY).requireNetwork().persist());
+        super(new Params(PRIORITY)
+            .requireNetwork()
+            .persist());
+        mText = text:
     }
-    
+    //...
+}
+```
+
+---
+
+```java
+public class PostTweetJob extends Job {
+    //...
     @Override
     public void onAdded() {
     }
     
     @Override
     public void onRun() throws Throwable {
-        webservice.postTweet(text);
+        webservice.postTweet(mText);
     }
-    
-    @Override
-    protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
-        return RetryConstraint.createExponentialBackoff(runCount, 1000);
-    }
-    
-    @Override
-    protected void onCancel(@CancelReason int cancelReason, @Nullable Throwable throwable) {
-    }
+    //...
 }
 ```
+
+---
 
 - [Job manager configuration](https://github.com/yigit/android-priority-jobqueue/wiki/Job-Manager-Configuration)
 
 ```java
-final Configuration loConfiguration = new Configuration.Builder(poContext)
-				//always keep at least one consumer alive
-                .minConsumerCount(1)
-                //up to 3 consumers at a time
-                .maxConsumerCount(3)
-                //3 jobs per consumer
-                .loadFactor(3) 
-                //wait 2 minute
-                .consumerKeepAlive(120) 
-                .build();
-final JobManager loJobManager = new JobManager(poContext, loConfiguration);
+final Configuration loConfiguration = 
+    new Configuration.Builder(poContext)
+        .minConsumerCount(1)
+        .maxConsumerCount(3)
+        .loadFactor(3) // 3 jobs per consumer
+        .consumerKeepAlive(120) 
+        .build();
+    
+final JobManager loJobManager = 
+    new JobManager(poContext, loConfiguration);
 ```
+
+---
 
 - Simple way to create and enqueue a task
 
 ```java
-final PostTweetJob loPostTweetJob = new PostTweetJob("test");
-jobManager.addJobInBackground(loPostTweetJob );
+final PostTweetJob loPostTweetJob = 
+    new PostTweetJob("test");
+
+jobManager
+    .addJobInBackground(loPostTweetJob );
 ```
 
 # Result propagation: [EventBus](https://github.com/greenrobot/EventBus)
@@ -210,39 +234,45 @@ jobManager.addJobInBackground(loPostTweetJob );
 - Thread delivery
 - Convenient Annotation based API
 
+---
+
 ### Set-up
 
 - Create an event class
 
 ```java
-public class EventQueryGetReposDidFinish {}
+public class EventQueryDidFinish
 ```
 
-- Register your subscriber
+- Register your subscriber...
 
 ```java
 eventBus.register(this);
 ```
 
-and unregister if needed:
+- ...and unregister if needed:
 
 ```java
 eventBus.unregister(this);
 ```
 
+---
+
 - Declare subscribing method
 
 ```java
 @Subscribe(threadMode = ThreadMode.MAIN)
-public void onEventQueryGetRepos(@NonNull final EventQueryGetReposDidFinish poEvent) {
-	//...
+public void onEventQueryDidFinish(
+    final EventQueryDidFinish event) {
+    //...
 }
 ```
+
 - Post event
 
 ```java
-final EventQueryGetReposDidFinish loEvent = //...
-eventBus.post(loEvent);
+final EventQueryDidFinish event = //...
+eventBus.post(event);
 ```
 
 # Conclusion

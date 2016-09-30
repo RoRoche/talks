@@ -7,7 +7,7 @@ $(OUTPUT): $(INPUT)
 	pandoc -st beamer -V theme:$(THEME) $(INPUT) --listings -H $(LISTINGS) -o $(OUTPUT)
 
 run: $(OUTPUT)
-	impressive -t Crossfade --nologo $(OUTPUT)
+	open $(OUTPUT)
 
 clean:
 	rm -f $(OUTPUT)
