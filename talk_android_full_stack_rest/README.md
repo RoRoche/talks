@@ -49,7 +49,7 @@ public interface GitHubService {
 
 ---
 
-- Build at runtime an implementation
+- Build an implementation at runtime
 
 ```java
 Retrofit retrofit = new Retrofit.Builder()
