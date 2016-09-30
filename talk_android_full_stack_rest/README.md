@@ -3,7 +3,7 @@ title: "Android: a full-stack to consume a REST API"
 author:
 - Romain Rochegude
 fontsize: 14pt
-date: 2016.04.04
+date: 2016.09.30
 output: 
   beamer_presentation:
     theme: "metropolis"

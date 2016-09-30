@@ -3,7 +3,7 @@ title: "Android: data persistence"
 author:
 - Romain Rochegude
 fontsize: 14pt
-date: 2016.04.04
+date: 2016.09.30
 output: 
   beamer_presentation:
     theme: "metropolis"
@@ -23,16 +23,19 @@ output:
 
 ## [The "raw" way](https://developer.android.com/training/basics/data-storage/databases.html)
 
-- Subclass `SQLiteOpenHelper`
-
 ```java
 private static final String SQL_CREATE_ENTRIES =
     "CREATE TABLE REPO (" +
     "_ID INTEGER PRIMARY KEY," +
     "NAME TEXT)";
+
 private static final String SQL_DELETE_ENTRIES =
     "DROP TABLE IF EXISTS REPO ";
 ```
+
+---
+
+- Subclass `SQLiteOpenHelper`
 
 ```java
 public class ReposDbHelper extends SQLiteOpenHelper {
@@ -42,25 +45,33 @@ public class ReposDbHelper extends SQLiteOpenHelper {
     public ReposDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
-    
+    //...
+```
+
+---
+
+```java
+    //...
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
-
+    }
+    
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
     }
-    
-    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        onUpgrade(db, oldVersion, newVersion);
-    }
 }
 ```
 
+---
+
 - Get an instance of `SQLiteOpenHelper`
 ```java
-final ReposDbHelper loDbHelper = new ReposDbHelper(getContext());
+final ReposDbHelper loDbHelper = 
+    new ReposDbHelper(getContext());
 ```
+
+---
 
 - Put Information into a Database
 
@@ -68,10 +79,12 @@ final ReposDbHelper loDbHelper = new ReposDbHelper(getContext());
 final SQLiteDatabase loDB = loDbHelper.getWritableDatabase();
 
 final ContentValues loValues = new ContentValues();
-loValues .put("name", "a sample name");
+loValues.put("name", "a sample name");
 
 final long llNewRowId = db.insert("REPO", null, loValues);
 ```
+
+---
 
 - Read Information from a Database
 
@@ -84,7 +97,11 @@ final String lsSelection = "NAME = ?";
 final String[] lasSelectionArgs = { "a sample name" };
 
 final String lsSortOrder = "NAME DESC";
+```
 
+---
+
+```java
 final Cursor loCursor = loDB.query(
     "REPO",
     lasProjection,
@@ -92,8 +109,7 @@ final Cursor loCursor = loDB.query(
     lasSelectionArgs,
     null,
     null,
-    lsSortOrder
-    );
+    lsSortOrder);
 loCursor.moveToFirst();
 
 final long llItemId = loCursor.getLong(
@@ -112,99 +128,121 @@ public class RepoProvider extends ContentProvider {
 }
 ```
 
+---
+
 - Define a specific `UriMatcher` and configure available URI
 
 ```java
 public class RepoProvider extends ContentProvider {
-	private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    static {
-        sUriMatcher.addURI("com.example.app.provider", "repo", 1);
-        sUriMatcher.addURI("com.example.app.provider", "repo/#", 2);
-    }
+	private static final UriMatcher sUriMatcher = 
+	    new UriMatcher(UriMatcher.NO_MATCH);
 }
 ```
+
+---
+
+```java
+static {
+  sUriMatcher.addURI("fr.test.app.provider", "repo", 1);
+  sUriMatcher.addURI("fr.test.app.provider", "repo/#", 2);
+}
+```
+
+---
 
 - Override various CRUD methods
 
 ```java
-public class RepoProvider extends ContentProvider {
-	public Cursor query(
-        Uri uri,
-        String[] projection,
-        String selection,
-        String[] selectionArgs,
-        String sortOrder) {
-		//...
-        switch (sUriMatcher.match(uri)) {
-            case 1:
-                if (TextUtils.isEmpty(sortOrder)) {
-	                sortOrder = "_ID ASC";
-	            }
-                break;
-            case 2:
-                selection = selection + "_ID = " + uri.getLastPathSegment();
-                break;
-            default:
-	            //...
-        }
+public Cursor query(
+    Uri uri,
+    String[] projection,
+    String selection,
+    String[] selectionArgs,
+    String sortOrder) {
+    //...
+```
+
+---
+
+```java
+//...
+switch (sUriMatcher.match(uri)) {
+    case 2:
+        selection = selection + "_ID = " + uri.getLastPathSegment();
+        break;
+    default:
+        //...
 }
 ```
+
+---
 
 - Use it through a `ContentResolver` instance
 
 ```java
 mCursor = getContentResolver().query(
-    "com.example.app.provider/repo/2",
+    "fr.test.app.provider/repo/2",
     mProjection,
     mSelectionClause,
     mSelectionArgs,
     mSortOrder); 
 ```
 
-- Refer to the [open-sourced Google's iosched application](https://github.com/google/iosched/tree/master/android/src/main/java/com/google/samples/apps/iosched/provider)
+---
 
-## Async management: [Loader](https://developer.android.com/training/load-data-background/setup-loader.html) and [AsyncQueryHandler](http://developer.android.com/reference/android/content/AsyncQueryHandler.html)
+- Refer to the **[open-sourced Google's iosched application](https://github.com/google/iosched/tree/master/android/src/main/java/com/google/samples/apps/iosched/provider)**
+
+## Async management
 
 - Perform CRUD operations outside of the main thread
 
-- For example, to query the `ContentProvider` in an `Activity`, make it implementing `LoaderManager.LoaderCallbacks<Cursor>`
+---
+
+### Query data using [Loader](https://developer.android.com/training/load-data-background/setup-loader.html)
+
+- To query the `ContentProvider` in an `Activity`, make it implementing `LoaderManager.LoaderCallbacks<Cursor>`
 
 ```java
-public class ReposListActivity extends FragmentActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class ReposListActivity 
+    extends FragmentActivity 
+    implements LoaderManager.LoaderCallbacks<Cursor> {
 }
 ```
+
+---
 
 - Start loading data with a loader identifier
 
 ```java
-getLoaderManager().initLoader(LOADER_REPOS, null, this);
+getLoaderManager()
+    .initLoader(LOADER_REPOS, null, this);
 ```
 
 - Implement `LoaderCallbacks`...
+
+---
 
 - ...to create the `CursorLoader`
 
 ```java
 @Override
-public Loader<Cursor> onCreateLoader(int loaderID, Bundle bundle)
-{
-    switch (loaderID) {
-        case LOADER_REPOS:
-            return new CursorLoader(
-                        this,
-                        "com.example.app.provider/repo/",
-                        mProjection,
-                        null,
-                        null,
-                        null
-        );
-        default:
-            return null;
-    }
+public Loader<Cursor> onCreateLoader(
+  int id, Bundle bundle) {
+  if(id == LOADER_REPOS) {
+    return new CursorLoader(
+      this,
+      "fr.test.app.provider/repo",
+      mProjection,
+      null, null, null);
+  }
+  //...
 }
 ```
+
+---
+
 - ...and deal with result
+
 ```java
 @Override
 public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
@@ -214,6 +252,10 @@ public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 }
 ```
 
+---
+
+- See also: [AsyncQueryHandler](http://developer.android.com/reference/android/content/AsyncQueryHandler.html)
+
 # The ORM way
 
 ## The well-known: ORMLite
@@ -221,9 +263,9 @@ public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 - Declare your model using ORMLite annotations
 
 ```java
-@DatabaseTable(tableName = "REPO", daoClass = DAORepo.class)
+@DatabaseTable(tableName = "REPO")
 public class RepoEntity {
-    @DatabaseField(columnName = BaseColumns._ID, generatedId = true)
+    @DatabaseField(columnName = "_ID", generatedId = true)
     public long _id;
 
     @DatabaseField
@@ -231,82 +273,110 @@ public class RepoEntity {
 }
 ```
 
+---
+
 - declare the corresponding DAO
 
 ```java
-public class DAORepo extends extends BaseDaoImpl<RepoEntity, Long> {
-    public DAORepo(final ConnectionSource poConnectionSource) throws SQLException {
-        this(poConnectionSource, RepoEntity.class);
+public class DAORepo extends BaseDaoImpl<RepoEntity, Long> {
+    
+    public DAORepo(ConnectionSource cs) 
+        throws SQLException {
+        this(cs, RepoEntity.class);
     }
-
-    public DAORepo(final ConnectionSource poConnectionSource, final Class<RepoEntity> poDataClass) throws SQLException {
-        super(poConnectionSource, poDataClass);
-    }
-
-    public DAORepo(final ConnectionSource poConnectionSource, final DatabaseTableConfig<RepoEntity> poTableConfig) throws SQLException {
-        super(poConnectionSource, poTableConfig);
-    }
+    
+    //...
 }
 ```
+
+---
 
 - subclass `OrmLiteSqliteOpenHelper`
 
 ```java
-public class DatabaseHelperAndroidStarter extends OrmLiteSqliteOpenHelper {
+public class DatabaseHelperTest 
+  extends OrmLiteSqliteOpenHelper {
 
-    private static final String DATABASE_NAME = "android_starter.db";
-    private static final int DATABASE_VERSION = 1;
+  private static final String 
+    DATABASE_NAME = "test.db";
+    
+  private static final int 
+    DATABASE_VERSION = 1;
+  //...
+```
 
-    public DatabaseHelperAndroidStarter(
-	    @NonNull final Context poContext) {
-        super(poContext, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
-    }
+---
 
-    @Override
-    public void onCreate(@NonNull final SQLiteDatabase poDatabase, @NonNull final ConnectionSource poConnectionSource) {
-        try {
-            TableUtils.createTable(poConnectionSource, RepoEntity.class);
-        } catch (final SQLException loException) {
-            //...
-        }
-    }
+```java
+//...
+public DatabaseHelperTest(
+  Context context) {
+  
+  super(context, 
+    DATABASE_NAME, 
+    null, 
+    DATABASE_VERSION, 
+    R.raw.ormlite_config);
+}
+//...
+```
 
-    @Override
-    public void onUpgrade(@NonNull final SQLiteDatabase poDatabase, @NonNull final ConnectionSource poConnectionSource, final int piOldVersion, final int piNewVersion) {
-        //...
-    }
+---
+
+```java
+//...
+@Override
+public void onCreate(SQLiteDatabase db, ConnectionSource cs) {
+  TableUtils.createTable(cs, RepoEntity.class);
+}
+
+@Override
+public void onUpgrade(SQLiteDatabase db, ConnectionSource cs, int oldVersion, int newVersion) {
+  //...
 }
 ```
+
+---
 
 - get the requested DAO
 
 ```java
-public DAORepo provideDAORepo(@NonNull final DatabaseHelperAndroidStarter poDatabaseHelperAndroidStarter) {
-        try {
-            final ConnectionSource loConnectionSource = poDatabaseHelperAndroidStarter.getConnectionSource();
-            final DatabaseTableConfig<RepoEntity> loTableConfig = DatabaseTableConfigUtil.fromClass(loConnectionSource, RepoEntity.class);
-            return new DAORepo(loConnectionSource);
-        } catch (final SQLException loException) {
-            //...
-        }
-        return null;
-    }
+DatabaseHelperTest helper = //...
+
+ConnectionSource cs = helper.getConnectionSource();
+
+DatabaseTableConfig<RepoEntity> tableConfig = 
+  DatabaseTableConfigUtil.fromClass(cs, RepoEntity.class);
+
+DAORepo dao = new DAORepo(cs, tableConfig);
 ```
+
+---
 
 - perform CRUD operations
 
 ```java
 // create
-final RepoEntity loRepoEntity = new RepoEntity("a sample name");
-loDaoRepo.create(loRepoEntity );
 
-// read
-final QueryBuilder<RepoEntity, Long> loQueryBuilder =
-  loDaoRepo.queryBuilder();
-loQueryBuilder.where().eq("name", "a sample name");
-final PreparedQuery<RepoEntity> loPreparedQuery = loQueryBuilder.prepare();
-final List<RepoEntity> lloRepo = loDaoRepo.query(loPreparedQuery);
+RepoEntity repo = 
+  new RepoEntity("a sample name");
+  
+dao.create(repo);
 ```
+
+---
+
+```java
+// read
+
+List<RepoEntity> repos = 
+    dao.queryBuilder()
+        .where()
+        .eq("name", "a sample name")
+        .query();
+```
+
+---
 
 - Performance: [orm-gap gradle plugin](https://github.com/stephanenicolas/ormlite-android-gradle-plugin)
 
@@ -315,24 +385,29 @@ buildscript {
   repositories {
     mavenCentral()
   }
-
   dependencies {
-    classpath 'com.github.stephanenicolas.ormgap:ormgap-plugin:1.0.0-SNAPSHOT'
+    classpath 'com.github.stephanenicolas.ormgap'
+      + ':ormgap-plugin:1.0.0-SNAPSHOT'
   }
 }
 
 apply plugin: 'ormgap'
 ```
 
+---
+
 - generate an ORMLite configuration file that boosts DAOs creations
 - to use this file
 
 ```java
 public RepoDatabaseHelper(Context context) {
-    super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
+    super(context, 
+      DATABASE_NAME, 
+      null, 
+      DATABASE_VERSION,
+      R.raw.ormlite_config);
 }
 ```
-
 
 ## The attractive way: [requery](https://github.com/requery/requery/)
 
@@ -340,61 +415,58 @@ public RepoDatabaseHelper(Context context) {
 - SQL generator
 - RxJava and Java 8 support
 - No reflection, compile-time processing and generation
+- Relationships support
+- Callback method (`@PostLoad`)
 - Custom type converters
+
+---
 
 - Define object mapping
 
 ```java
 @Entity
-abstract class AbstractPerson {
-
+abstract class Repo {
     @Key @Generated
     int id;
 
-    @Index("name_index")
     String name;
-
-    @OneToMany // relationships 1:1, 1:many, many to many
-    Set<Phone> phoneNumbers;
-
-    @Converter(EmailToStringConverter.class) // custom type conversion
-    Email email;
-
-    @PostLoad
-    void afterLoad() {
-        //...
-    }
 }
 ```
+
+---
 
 - Easy to perform SQL queries
 
 ```java
-Result<Person> query = data
-    .select(Person.class)
-    .where(Person.NAME.lower().like("b%")).and(Person.AGE.gt(20))
-    .orderBy(Person.AGE.desc())
-    .limit(5)
-    .get();
+Result<Repo> repos = data
+  .select(Repo.class)
+  .where(Repo.NAME.lower().like("%sample%"))
+  .orderBy(Repo.ID.desc())
+  .get();
 ```
+
+---
 
 ### Async management: RxJava
 
 - Get a specific instance of `SingleEntityStore`
 
 ```java
-public SingleEntityStore<Persistable> provideDataStore(@NonNull final Context poContext) {
-    final DatabaseSource loSource = new DatabaseSource(poContext, Models.DEFAULT, "example.sqlite", 1);
-    final Configuration loConfiguration = loSource.getConfiguration();
-    final SingleEntityStore<Persistable> loDataStore = RxSupport.toReactiveStore(new EntityDataStore<>(loConfiguration));
-    return loDataStore;
-}
+DatabaseSource dbSource = 
+  new DatabaseSource(context, Models.DEFAULT, "test.db", 1);
+
+Configuration conf = dbSource.getConfiguration();
+
+SingleEntityStore<Persistable> data = 
+  RxSupport.toReactiveStore(new EntityDataStore<>(conf));
 ```
+
+---
 
 - and use it the RX way
 
 ```java
-dataStore.select(RepoEntity.class)
+data.select(RepoEntity.class)
 	.get()
 	.subscribeOn(Schedulers.newThread())
 	.subscribe(/*...*/)
@@ -406,7 +478,7 @@ dataStore.select(RepoEntity.class)
 
 - Personal assessment of each way
 
-|| Raw/ContentProvider | ORMLite | requery |
+|| ContentProvider | ORMLite | requery |
 --- | --- | --- | ---
 |setup		 | - |+|+|
 |performance     |+|-|+|
