@@ -67,7 +67,7 @@ public class ReposDbHelper extends SQLiteOpenHelper {
 
 - Get an instance of `SQLiteOpenHelper`
 ```java
-final ReposDbHelper loDbHelper = 
+ReposDbHelper dbHelper = 
     new ReposDbHelper(getContext());
 ```
 
@@ -76,12 +76,12 @@ final ReposDbHelper loDbHelper =
 - Put Information into a Database
 
 ```java
-final SQLiteDatabase loDB = loDbHelper.getWritableDatabase();
+SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-final ContentValues loValues = new ContentValues();
-loValues.put("name", "a sample name");
+ContentValues values = new ContentValues();
+values.put("name", "a sample name");
 
-final long llNewRowId = db.insert("REPO", null, loValues);
+long newRowId = db.insert("REPO", null, values);
 ```
 
 ---
@@ -89,31 +89,31 @@ final long llNewRowId = db.insert("REPO", null, loValues);
 - Read Information from a Database
 
 ```java
-final SQLiteDatabase loDB = loDbHelper.getReadableDatabase();
+SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-final String[] lasProjection = { "_id", "name" };
+String[] projection = { "_id", "name" };
 
-final String lsSelection = "NAME = ?";
-final String[] lasSelectionArgs = { "a sample name" };
+String selection = "NAME = ?";
+String[] selectionArgs = { "a sample name" };
 
-final String lsSortOrder = "NAME DESC";
+String sortOrder = "NAME DESC";
 ```
 
 ---
 
 ```java
-final Cursor loCursor = loDB.query(
+Cursor cursor = db.query(
     "REPO",
-    lasProjection,
-    lsSelection,
-    lasSelectionArgs,
+    projection,
+    selection,
+    selectionArgs,
     null,
     null,
-    lsSortOrder);
-loCursor.moveToFirst();
+    sortOrder);
+cursor.moveToFirst();
 
-final long llItemId = loCursor.getLong(
-    loCursor.getColumnIndexOrThrow("_ID")
+long itemId = cursor.getLong(
+    cursor.getColumnIndexOrThrow("_ID")
 );
 ```
 

@@ -40,8 +40,9 @@ output:
 ```java
 public interface GitHubService {
 
-    @GET("/users/{user}/repos")
-    Call<List<DTORepo>> listRepos(@Path("user") final String psUser);
+  @GET("/users/{user}/repos")
+  Call<List<DTORepo>> listRepos(
+    @Path("user") String user);
 
 }
 ```
@@ -51,11 +52,11 @@ public interface GitHubService {
 - Build at runtime an implementation
 
 ```java
-final Retrofit loRetrofit = new Retrofit.Builder()
+Retrofit retrofit = new Retrofit.Builder()
     .baseUrl("https://api.github.com")
     .build();
 
-final GitHubService loService = loRetrofit.create(GitHubService.class);
+GitHubService service = retrofit.create(GitHubService.class);
 ```
 
 ---
@@ -63,13 +64,13 @@ final GitHubService loService = loRetrofit.create(GitHubService.class);
 - Simple calls
 
 ```java
-final Call<List<DTORepo>> lloRepos = loService.listRepos("RoRoche");
+Call<List<DTORepo>> repos = service.listRepos("RoRoche");
 ```
 
 - Converters to (de)serialize HTTP bodies 
 
 ```java
-final Retrofit loRetrofit = new Retrofit.Builder()
+Retrofit retrofit = new Retrofit.Builder()
     //...
     .addConverterFactory(
         GsonConverterFactory.create())
@@ -108,7 +109,7 @@ public class DTORepo {
 - Available [retrofit converter](https://github.com/aurae/retrofit-logansquare)
 
 ```java
-final Retrofit loRetrofit = new Retrofit.Builder()
+Retrofit retrofit = new Retrofit.Builder()
     //...
     .addConverterFactory(
         LoganSquareConverterFactory.create())
@@ -121,12 +122,12 @@ final Retrofit loRetrofit = new Retrofit.Builder()
 
 ```java
 // Parse from an InputStream
-final InputStream loIS = ...;
-final Image loImage = LoganSquare.parse(loIS , Image.class);
+InputStream is = //...
+Image image = LoganSquare.parse(is, Image.class);
 
 // Parse from a String
-final String lsJson = ...;
-final Image loImage= LoganSquare.parse(lsJson, Image.class); 
+String json = //...
+Image image = LoganSquare.parse(json, Image.class); 
 ```
 
 ---
@@ -135,11 +136,11 @@ final Image loImage= LoganSquare.parse(lsJson, Image.class);
 
 ```java
 // Serialize it to an OutputStream
-final OutputStream loOs = ...;
-LoganSquare.serialize(loImage, loOs );
+OutputStream os = //...
+LoganSquare.serialize(image, os);
 
 // Serialize it to a String
-final String lsJson = LoganSquare.serialize(loImage);
+String json = LoganSquare.serialize(image);
 ```
 
 ---
@@ -164,7 +165,7 @@ final String lsJson = LoganSquare.serialize(loImage);
 
 ```java
 public class PostTweetJob extends Job {
-    public static final int PRIORITY = 1;
+    public static int PRIORITY = 1;
     
     private String mText;
     
@@ -200,7 +201,7 @@ public class PostTweetJob extends Job {
 - [Job manager configuration](https://github.com/yigit/android-priority-jobqueue/wiki/Job-Manager-Configuration)
 
 ```java
-final Configuration loConfiguration = 
+Configuration configuration = 
     new Configuration.Builder(poContext)
         .minConsumerCount(1)
         .maxConsumerCount(3)
@@ -208,8 +209,8 @@ final Configuration loConfiguration =
         .consumerKeepAlive(120) 
         .build();
     
-final JobManager loJobManager = 
-    new JobManager(poContext, loConfiguration);
+JobManager jobManager = 
+    new JobManager(context, configuration);
 ```
 
 ---
@@ -217,11 +218,11 @@ final JobManager loJobManager =
 - Simple way to create and enqueue a task
 
 ```java
-final PostTweetJob loPostTweetJob = 
+PostTweetJob postTweetJob = 
     new PostTweetJob("test");
 
 jobManager
-    .addJobInBackground(loPostTweetJob );
+    .addJobInBackground(postTweetJob);
 ```
 
 # Result propagation: [EventBus](https://github.com/greenrobot/EventBus)
@@ -263,7 +264,7 @@ eventBus.unregister(this);
 ```java
 @Subscribe(threadMode = ThreadMode.MAIN)
 public void onEventQueryDidFinish(
-    final EventQueryDidFinish event) {
+    EventQueryDidFinish event) {
     //...
 }
 ```
@@ -271,7 +272,7 @@ public void onEventQueryDidFinish(
 - Post event
 
 ```java
-final EventQueryDidFinish event = //...
+EventQueryDidFinish event = //...
 eventBus.post(event);
 ```
 
