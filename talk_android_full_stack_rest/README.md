@@ -77,7 +77,7 @@ Retrofit retrofit = new Retrofit.Builder()
     .build();
 ```
 
-## Conclusion
+---
 
 - To add a new HTTP request:
 	- declare DTO class(es) with your parsing strategy
