@@ -192,6 +192,10 @@ mCursor = getContentResolver().query(
 
 - Refer to the **[open-sourced Google's iosched application](https://github.com/google/iosched/tree/master/android/src/main/java/com/google/samples/apps/iosched/provider)**
 
+- Helpful libraries to simplify the deal with a ContentProvider:
+	- [ProviGen](https://github.com/TimotheeJeannin/ProviGen)
+	- [AutoValue: Cursor Extension](https://github.com/gabrielittner/auto-value-cursor)
+
 ## Async management
 
 - Perform CRUD operations outside of the main thread
@@ -476,7 +480,7 @@ data.select(RepoEntity.class)
 
 ## Conclusion
 
-- Personal assessment of each way
+- Personal assessments of each way
 
 || ContentProvider | ORMLite | requery |
 --- | --- | --- | ---
