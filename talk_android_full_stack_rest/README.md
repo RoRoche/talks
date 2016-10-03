@@ -106,18 +106,6 @@ public class DTORepo {
 
 ---
 
-- Available [retrofit converter](https://github.com/aurae/retrofit-logansquare)
-
-```java
-Retrofit retrofit = new Retrofit.Builder()
-    //...
-    .addConverterFactory(
-        LoganSquareConverterFactory.create())
-    .build();
-```
-
----
-
 - Simple parsing methods
 
 ```java
@@ -141,6 +129,18 @@ LoganSquare.serialize(image, os);
 
 // Serialize it to a String
 String json = LoganSquare.serialize(image);
+```
+
+---
+
+- Available [retrofit converter](https://github.com/aurae/retrofit-logansquare)
+
+```java
+Retrofit retrofit = new Retrofit.Builder()
+    //...
+    .addConverterFactory(
+        LoganSquareConverterFactory.create())
+    .build();
 ```
 
 ---
