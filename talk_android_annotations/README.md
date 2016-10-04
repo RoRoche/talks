@@ -197,6 +197,8 @@ public abstract class Person {
 
 * Easily deal with the result from an activity started for result: [OnActivityResult](https://github.com/vanniktech/OnActivityResult)
 
+* Runtime permissions handling: [PermissionsDispatcher](https://github.com/hotchemi/PermissionsDispatcher)
+
 * and so on: <http://android-arsenal.com/tag/166>
 
 # Write custom annotation processors
@@ -257,6 +259,8 @@ public static void main(String[] args) {
 
 ### A must-read article: [ANNOTATION PROCESSING 101
 by Hannes Dorfmann](http://hannesdorfmann.com/annotation-processing/annotationprocessing101)
+
+### Another article, including a JCenter publication section: [Android Annotation Processing: POJO string generator](http://brianattwell.com/android-annotation-processing-pojo-string-generator/)
 
 # Conclusion
 
