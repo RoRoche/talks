@@ -1,5 +1,5 @@
 ---
-title: "Android: a full-stack to consume a REST API"
+title: "Android: a full stack to consume a REST API"
 author:
 - Romain Rochegude
 fontsize: 14pt

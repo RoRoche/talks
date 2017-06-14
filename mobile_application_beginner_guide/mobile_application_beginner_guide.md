@@ -81,7 +81,7 @@
 |REST client                  | Alamofire                 | retrofit                  | RestSharp / Refit?                | native |
 |JSON parsing                 | ObjectMapper              | Jackson / LoganSquare     | Newtonsoft.Json (Json.NET)        | native |
 |dependency management        | CocoaPods                 | Gradle                    | NuGet?                             | bower |
-|async                        | SwiftTask                 | RxJava / ProrityJobQueue  | Rx.NET?                           | promises |
+|async                        | ReactKit / SwiftTask      | RxJava / ProrityJobQueue  | Rx.NET?                           | promises |
 |dependency injection         | (Swinject?)               | Dagger2                   | AutoFac?                          | native |
 |event bus                    | Kugel                     | EventBus                  | MessageBus?                       | native |
 |async image loading          | Kingfisher                | Picasso                   | native vs. 3rd-party library?     | native |
