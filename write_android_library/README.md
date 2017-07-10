@@ -74,8 +74,8 @@ Write an Android library
 	* <https://github.com/google/auto/tree/master/value>
 
 * Failure strategy: fail safe vs. fail fast
-	* Fail fast with preconditions
 	* Fail safe with resilience (recover, retry)
+	* Fail fast with preconditions
 
 * Lazy evaluation (native in Kotlin)
 
